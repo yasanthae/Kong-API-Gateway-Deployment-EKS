@@ -1,0 +1,72 @@
+# Kong Control Plane Configuration (Free Version)
+ingressController:
+  enabled: false
+
+image:
+  repository: kong/kong-gateway
+  tag: "3.10.0.2"
+
+env:
+  # Single instance mode (not control_plane)
+  role: traditional
+
+  # Database configuration
+  database: postgres
+  pg_database: ps_db
+  pg_user: ps_user
+  pg_password: pg_user123
+  pg_host: postgres
+  pg_port: 5432
+  pg_ssl: "off"
+
+  # Kong Manager password
+  password: kong_admin
+
+# Disable enterprise features for free version
+enterprise:
+  enabled: false
+
+# Enable Admin API
+admin:
+  enabled: true
+  http:
+    enabled: true
+    servicePort: 8001
+
+# Enable Manager UI for free version
+manager:
+  enabled: true
+  http:
+    enabled: true
+    servicePort: 8002
+
+# Disable clustering (not needed for single instance)
+cluster:
+  enabled: false
+
+clustertelemetry:
+  enabled: false
+
+# Disable proxy on control plane
+proxy:
+  enabled: false
+
+# Ingress configuration for Manager UI
+ingress:
+  enabled: true
+  hostname: ""
+  path: /
+  pathType: Prefix
+  ingressClassName: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/group.name: kong-manager-alb
+    kubernetes.io/ingress.class: alb
+
+# Service configuration
+service:
+  enabled: true
+  type: ClusterIP
