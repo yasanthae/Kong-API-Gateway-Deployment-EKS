@@ -21,9 +21,9 @@ env:
 
   # Kong Manager password
   password: kong_admin
-  
+
   # Configure Kong Manager to use external Admin API URL
-  admin_api_uri: http://kong-admin-api-alb-1918946037.ap-south-1.elb.amazonaws.com
+  admin_api_uri: http://kong-admin-api-alb-820167437.ap-south-1.elb.amazonaws.com
 
 # Disable enterprise features for free version
 enterprise:

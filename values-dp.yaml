@@ -1,39 +1,41 @@
-# Do not use Kong Ingress Controller
+# Kong Data Plane Configuration (Community Edition)
 ingressController:
   enabled: false
 
 image:
-  repository: kong/kong-gateway
-  tag: "3.10.0.2"
+  repository: kong
+  tag: "3.10"
 
-# Mount the secret created earlier
 secretVolumes:
   - kong-cluster-cert
 
 env:
-  # data_plane nodes do not have a database
   role: data_plane
   database: "off"
 
-  # Tell the data plane how to connect to the control plane
+  # Control plane connection
   cluster_control_plane: kong-cp-kong-cluster.kong.svc.cluster.local:8005
   cluster_telemetry_endpoint: kong-cp-kong-clustertelemetry.kong.svc.cluster.local:8006
 
-  # Configure control plane / data plane authentication
+  # Authentication certificates
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
 
-# Enterprise functionality
+# Community Edition - no enterprise features
 enterprise:
-  enabled: true
-  license_secret: kong-enterprise-license
+  enabled: false
 
-# The data plane handles proxy traffic only
+# Proxy Configuration with External ELB
 proxy:
   enabled: true
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 
-# These roles are served by the kong-cp deployment
+# Disable admin functions on data plane
 admin:
   enabled: false
 
